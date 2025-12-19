@@ -6,6 +6,7 @@ def k_means(data, k):
 class TestKMeans(unittest.TestCase):
     def test_kmeans_basic(self):
         self.assertEqual(k_means([1, 2, 4], 2), [[1, 2], [4]])
+        self.assertEqual(k_means([1, 5, 6, 10], 3), [[1], [5, 6], [10]])
 
 if __name__ == "__main__":
     unittest.main()
