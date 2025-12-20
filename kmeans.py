@@ -11,8 +11,13 @@ def k_means(data, k):
 
 class TestKMeans(unittest.TestCase):
     def test_kmeans_basic(self):
-        self.assertEqual(k_means([1, 2, 4], 2), [[1, 2], [4]])
-        self.assertEqual(k_means([1, 5, 6, 10], 3), [[1], [5, 6], [10]])
+        params = [
+            ([1, 2, 4], 2, [[1, 2], [4]]),
+            ([1, 5, 6, 10], 3, [[1], [5, 6], [10]])
+        ]
+        for data, k, expected in params:
+            with self.subTest(data=data, k=k, expected=expected):
+                self.assertEqual(k_means(data, k), expected)
 
 if __name__ == "__main__":
     unittest.main()
