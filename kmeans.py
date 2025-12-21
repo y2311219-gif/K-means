@@ -1,4 +1,7 @@
 def k_means(data, k):
+    if k <= 0:
+        raise ValueError("k must be positive")
+    
     centers = _init_centers(data, k)
     
     old_clusters = [[] for _ in range(k)]
