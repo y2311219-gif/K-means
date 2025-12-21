@@ -1,11 +1,19 @@
 def k_means(data, k):
     centers = _init_centers(data, k)
     
-    clusters = [[] for _ in range(k)]
-    for point in data:
-        cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
-        clusters[cluster_index].append(point)
-    
+    old_clusters = [[] for _ in range(k)]
+    while True:
+        clusters = [[] for _ in range(k)]
+        for point in data:
+            cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
+            clusters[cluster_index].append(point)
+        if(clusters == old_clusters):
+            break
+
+        for i in range(k):
+            centers[i] = sum(clusters[i]) / len(clusters[i])
+        old_clusters = clusters
+
     result = [sorted(cluster) for cluster in clusters]
     return result
 
