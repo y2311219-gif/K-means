@@ -34,7 +34,14 @@ class TestKMeans(unittest.TestCase):
         for k in params:
             with self.subTest(k=k):
                 with self.assertRaisesRegex(ValueError, "k must be positive"):
-        	        k_means([1, 2, 3], k)
+                    k_means([1, 2, 3], k)
+
+    def test_k_must_be_integer(self):
+        params = ["1", 0.5, [1, 2]]
+        for k in params:
+            with self.subTest(k=k):
+                with self.assertRaisesRegex(TypeError, "k must be integer"):
+                    k_means([1, 2, 3], k)
 
 if __name__ == "__main__":
     unittest.main()
