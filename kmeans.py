@@ -1,4 +1,6 @@
 def k_means(data, k):
+    if not isinstance(k, int):
+        raise TypeError("k must be integer")
     if k <= 0:
         raise ValueError("k must be positive")
     
