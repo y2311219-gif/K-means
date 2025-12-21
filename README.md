@@ -119,7 +119,7 @@ Red: 順番に並んでいない、1サイクルで終わるデータのテス�
 +                self.assertEqual(k_means(data, k), expected)
 ```
 
-Green: データの最小値・最大値を得るときにmin関数やmax関数を使用するように変更、及び返り値を結果を昇順にしたものに変更
+Green: データの最小値・最大値を得るときに`min`関数や`max`関数を使用するように変更、及び返り値を結果を昇順にしたものに変更
 
 ```diff
 def k_means(data, k):
@@ -260,7 +260,6 @@ def k_means(data, k):
 +            if(clusters[i] != []):
 +                centers[i] = sum(clusters[i]) / len(clusters[i])
         old_clusters = clusters
-
 		# ...
 ```
 
@@ -275,7 +274,6 @@ def k_means(data, k):
 -                centers[i] = sum(clusters[i]) / len(clusters[i])
 +        centers = _update_centers(centers, clusters)
 		old_clusters = clusters
-
 		# ...
 
 +def _update_centers(centers, clusters):
@@ -286,4 +284,46 @@ def k_means(data, k):
 +        else:
 +            new_centers.append(current_center)
 +    return new_centers
+```
+
+Red: `k`が正整数でない場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_k_must_be_positive(self):
++        params = [-1, 0]
++        for k in params:
++            with self.subTest(k=k):
++                with self.assertRaisesRegex(ValueError, "k must be positive"):
++                    k_means([1, 2, 3], k)
+```
+
+Green: `k`が正でない場合に`ValueError`を出すように修正
+
+```diff
+def k_means(data, k):
++    if k <= 0:
++        raise ValueError("k must be positive")
+	#...
+```
+
+Red: `k`が整数でない場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_k_must_be_integer(self):
++        params = ["1", 0.5, [1, 2]]
++        for k in params:
++            with self.subTest(k=k):
++                with self.assertRaisesRegex(TypeError, "k must be integer"):
++                    k_means([1, 2, 3], k)
+```
+
+Green: `k`が整数でない場合に`TypeError`を出すように修正
+
+```diff
+def k_means(data, k):
++    if not isinstance(k, int):
++        raise TypeError("k must be integer")
+	#...
 ```
