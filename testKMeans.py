@@ -19,6 +19,9 @@ class TestKMeans(unittest.TestCase):
         for data, k, expected in params:
             with self.subTest(data=data, k=k, expected=expected):
                 self.assertEqual(k_means(data, k), expected)
+                
+    def test_kmeans_multiple_iteration(self):
+        self.assertEqual(k_means([1, 4, 6, 13], 3), [[1], [4, 6], [13]])
 
 if __name__ == "__main__":
     unittest.main()
