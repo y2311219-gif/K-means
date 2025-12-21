@@ -240,3 +240,50 @@ def k_means(data, k):
 +        clusters[cluster_index].append(point)
 +    return clusters
 ```
+
+Red: 所属する点が無いクラスターが発生する場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_kmeans_empty_cluster(self):
++        self.assertEqual(k_means([10, 10], 2), [[10, 10], []])
+```
+
+Green: 所属する点が無い場合は重心をそのままにするように変更
+
+```diff
+def k_means(data, k):
+	# ---変更のない部分は省略---
+	while True:
+		for i in range(k):
+-            centers[i] = sum(clusters[i]) / len(clusters[i])
++            if(clusters[i] != []):
++                centers[i] = sum(clusters[i]) / len(clusters[i])
+        old_clusters = clusters
+
+		# ...
+```
+
+Refactor: 重心の更新ロジックを別の関数として分離
+
+```diff
+def k_means(data, k):
+	# ---変更のない部分は省略---
+	while True:
+-        for i in range(k):
+-            if(clusters[i] != []):
+-                centers[i] = sum(clusters[i]) / len(clusters[i])
++        centers = _update_centers(centers, clusters)
+		old_clusters = clusters
+
+		# ...
+
++def _update_centers(centers, clusters):
++    new_centers = []
++    for current_center, cluster in zip(centers, clusters):
++        if cluster != []:
++            new_centers.append(sum(cluster) / len(cluster))
++        else:
++            new_centers.append(current_center)
++    return new_centers
+```
