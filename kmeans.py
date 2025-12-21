@@ -7,9 +7,7 @@ def k_means(data, k):
         if(clusters == old_clusters):
             break
 
-        for i in range(k):
-            if(clusters[i] != []):
-                centers[i] = sum(clusters[i]) / len(clusters[i])
+        centers = _update_centers(centers, clusters)
         old_clusters = clusters
 
     result = [sorted(cluster) for cluster in clusters]
@@ -27,3 +25,12 @@ def _form_clusters(data, k, centers):
         cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
         clusters[cluster_index].append(point)
     return clusters
+
+def _update_centers(centers, clusters):
+    new_centers = []
+    for current_center, cluster in zip(centers, clusters):
+        if cluster != []:
+            new_centers.append(sum(cluster) / len(cluster))
+        else:
+            new_centers.append(current_center)
+    return new_centers
