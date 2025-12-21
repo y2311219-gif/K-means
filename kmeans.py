@@ -8,7 +8,8 @@ def k_means(data, k):
             break
 
         for i in range(k):
-            centers[i] = sum(clusters[i]) / len(clusters[i])
+            if(clusters[i] != []):
+                centers[i] = sum(clusters[i]) / len(clusters[i])
         old_clusters = clusters
 
     result = [sorted(cluster) for cluster in clusters]
