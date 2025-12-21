@@ -22,6 +22,9 @@ class TestKMeans(unittest.TestCase):
                 
     def test_kmeans_outlier(self):
         self.assertEqual(k_means([1, 4, 6, 13], 3), [[1], [4, 6], [13]])
+        
+    def test_kmeans_multiple_iteration(self):
+        self.assertEqual(k_means([1, 6, 10, 11, 12], 3), [[1], [6], [10, 11, 12]])
 
 if __name__ == "__main__":
     unittest.main()
