@@ -13,8 +13,9 @@
 - 出力: `data` を `k` 個に分割した結果
 
 また、実装は次の方式を採用した。
-- 初期代表点: `data` の最小値から最大値の範囲を `k` 個に分割した時の、 `i` 番目の範囲の中心
-- 代表点: 所属する点の座標の平均
+- 初期代表点: ~~`data` の最小値から最大値の範囲を `k` 個に分割した時の、 `i` 番目の範囲の中心~~パーセンタイルの考え方を利用
+- 代表点: 所属する点の座標の平均 (重心)
+- 結果の安定性の判定: 前回の割り当て結果と同一であるかどうか
 
 ## TDDによる開発の流れ
 Red: 昇順に並んだ、1サイクルで終わるデータのテストケース
@@ -133,4 +134,109 @@ def k_means(data, k):
 -    return clusters
 +    result = [sorted(cluster) for cluster in clusters]
 +    return result
+```
+
+Red: 外れ値がある場合のデータのテストケース
+
+```diff
+ class TestKMeans(unittest.TestCase):
++    def test_kmeans_multiple_iteration(self): # この時点では複数サイクルの実装で解決できると想定していた
++        self.assertEqual(k_means([1, 4, 6, 13], 3), [[1], [4, 6], [13]])
+```
+
+Green: クラスターの重心の初期化をパーセンタイル方式に変更
+
+```diff
+ def k_means(data, k):
+-    d = (max(data) - min(data)) / k
+-    centers = [min(data) + (i + 0.5) * d for i in range(k)]
++    sorted_data = sorted(data)
++    d = (len(data) - 1) / (k - 1)
++    centers = [sorted_data[int(d * i)] for i in range(k)]
+	 # ---この後は変更なし---
+```
+
+Refactor: テストメソッド名を実際の解決方法に合わせて変更
+
+```diff
+ class TestKMeans(unittest.TestCase):
+-    def test_kmeans_multiple_iteration(self):
++    def test_kmeans_outlier(self):
+        self.assertEqual(k_means([1, 4, 6, 13], 3), [[1], [4, 6], [13]])
+```
+
+Refactor: 重心の初期化メソッドを別の関数として分割
+
+```diff
+def k_means(data, k):
+-    sorted_data = sorted(data)
+-    d = (len(data) - 1) / (k - 1)
+-    centers = [sorted_data[int(d * i)] for i in range(k)]
++    centers = _init_centers(data, k)
+	 # ---この後は変更なし---
+
++def _init_centers(data, k):
++    sorted_data = sorted(data)
++    d = (len(data) - 1) / (k - 1)
++    centers = [sorted_data[int(d * i)] for i in range(k)]
++    return centers
+```
+
+Red: 複数サイクルが必要になる場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_kmeans_multiple_iteration(self):
++        self.assertEqual(k_means([1, 6, 10, 11, 12], 3), [[1], [6], [10, 11, 12]])
+```
+
+Green: 重心の更新ロジックとループ処理を追加
+
+```diff
+def k_means(data, k):
+    centers = _init_centers(data, k)
+
+-    clusters = [[] for _ in range(k)]
+-    for point in data:
+-        cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
+-        clusters[cluster_index].append(point)
+    
++    old_clusters = [[] for _ in range(k)]
++    while True:
++        clusters = [[] for _ in range(k)]
++        for point in data:
++            cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
++            clusters[cluster_index].append(point)
++        if(clusters == old_clusters):
++            break
++
++       for i in range(k):
++            centers[i] = sum(clusters[i]) / len(clusters[i])
++        old_clusters = clusters
+
+    result = [sorted(cluster) for cluster in clusters]
+    return result
+```
+
+Refactor: クラスター構築ロジックを別の関数として分離
+
+```diff
+def k_means(data, k):
+	# ---ここは変更なし---
+	while True:
+-        clusters = [[] for _ in range(k)]
+-        for point in data:
+-            cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
+-            clusters[cluster_index].append(point)
++        clusters = _form_clusters(data, k, centers)
+        if(clusters == old_clusters):
+            break
+	# ---この後は変更なし--
+
++def _form_clusters(data, k, centers):
++    clusters = [[] for _ in range(k)]
++    for point in data:
++        cluster_index = min(range(k), key=lambda i: abs(point - centers[i]))
++        clusters[cluster_index].append(point)
++    return clusters
 ```
