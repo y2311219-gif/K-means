@@ -1,7 +1,5 @@
 def k_means(data, k):
-    sorted_data = sorted(data)
-    d = (len(data) - 1) / (k - 1)
-    centers = [sorted_data[int(d * i)] for i in range(k)]
+    centers = _init_centers(data, k)
     
     clusters = [[] for _ in range(k)]
     for point in data:
@@ -10,3 +8,9 @@ def k_means(data, k):
     
     result = [sorted(cluster) for cluster in clusters]
     return result
+
+def _init_centers(data, k):
+    sorted_data = sorted(data)
+    d = (len(data) - 1) / (k - 1)
+    centers = [sorted_data[int(d * i)] for i in range(k)]
+    return centers
