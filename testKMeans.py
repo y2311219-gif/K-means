@@ -28,6 +28,13 @@ class TestKMeans(unittest.TestCase):
         
     def test_kmeans_empty_cluster(self):
         self.assertEqual(k_means([10, 10], 2), [[10, 10], []])
+        
+    def test_k_must_be_positive(self):
+        params = [-1, 0]
+        for k in params:
+            with self.subTest(k=k):
+                with self.assertRaisesRegex(ValueError, "k must be positive"):
+        	        k_means([1, 2, 3], k)
 
 if __name__ == "__main__":
     unittest.main()
