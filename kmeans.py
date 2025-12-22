@@ -1,4 +1,6 @@
 def k_means(data, k):
+    if not all(isinstance(x, (int, float)) for x in data):
+        raise TypeError("data must be numeric list")
     if not isinstance(k, int):
         raise TypeError("k must be integer")
     if k <= 0:
