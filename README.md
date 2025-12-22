@@ -334,3 +334,28 @@ def k_means(data, k):
 +        raise TypeError("k must be integer")
 	#...
 ```
+
+### `data`についてのバリデーション
+
+Red: `data`に数値(`int`または`float`)でない値が混ざっている場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_data_must_be_numeric_list(self):
++        params = [
++            [1, 2, "a"],
++            [1, [2, 3], 4]
++        ]
++        for data in params:
++            with self.subTest(data=data):
++                with self.assertRaisesRegex(TypeError, "data must be numeric list"):
++                    k_means(data, 3)
+```
+
+Green: `data`に`int`でも`float`でもない値が混ざっている場合に`TypeError`を出すように修正
+
+```diff
+def k_means(data, k):
++    if not all(isinstance(x, (int, float)) for x in data):
++        raise TypeError("data must be numeric list")
+```
