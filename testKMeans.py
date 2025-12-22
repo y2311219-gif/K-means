@@ -45,6 +45,10 @@ class TestKMeans(unittest.TestCase):
     
     def test_k_is_one(self):
         self.assertEqual(k_means([1, 2, 3], 1), [[1, 2, 3]])
+        
+    def test_k_must_not_be_larger_than_datasize(self):
+        with self.assertRaisesRegex(ValueError, "k must not be larger than data size"):
+            k_means([1, 2, 3], 4)
                     
     def test_data_must_be_numeric_list(self):
         params = [
