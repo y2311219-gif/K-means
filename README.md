@@ -368,3 +368,49 @@ def k_means(data, k):
 +    if not all(isinstance(x, (int, float)) for x in data):
 +        raise TypeError("data must be numeric list")
 ```
+
+### `k`が1の場合の特例処理
+
+Red: `k=1`の場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_k_is_one(self):
++        self.assertEqual(k_means([1, 2, 3], 1), [[1, 2, 3]])
+```
+
+Green: `k=1`ならば特例として結果をすぐ返すように修正
+
+```diff
+def k_means(data, k):
+    # ---変更のない部分は省略---
+    if k <= 0:
+        raise ValueError("k must be positive")
+
++    if k == 1:
++        return [sorted(data)]
+    #...
+```
+
+### `k`が`data`のサイズより大きい場合の処理
+
+Red: `k`が`data`のサイズより大きい場合のテストケース
+
+```diff
+class TestKMeans(unittest.TestCase):
++    def test_k_must_not_be_larger_than_datasize(self):
++        with self.assertRaisesRegex(ValueError, "k must not be larger than data size"):
++            k_means([1, 2, 3], 4)
+```
+
+Green: `k>len(data)`の場合に`ValueError`を出すよう修正
+
+```diff
+class TestKMeans(unittest.TestCase):
+    # ---変更のない部分は省略---
+    if k <= 0:
+        raise ValueError("k must be positive")
++    if k > len(data):
++        raise ValueError("k must not be larger than data size")
+    #...
+```
