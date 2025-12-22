@@ -42,6 +42,16 @@ class TestKMeans(unittest.TestCase):
             with self.subTest(k=k):
                 with self.assertRaisesRegex(TypeError, "k must be integer"):
                     k_means([1, 2, 3], k)
+                    
+    def test_data_must_be_numeric_list(self):
+        params = [
+            [1, 2, "a"],
+            [1, [2, 3], 4]
+        ]
+        for data in params:
+            with self.subTest(data=data):
+                with self.assertRaisesRegex(TypeError, "data must be numeric list"):
+                    k_means(data, 3)
 
 if __name__ == "__main__":
     unittest.main()
