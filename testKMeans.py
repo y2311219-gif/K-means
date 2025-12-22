@@ -42,6 +42,9 @@ class TestKMeans(unittest.TestCase):
             with self.subTest(k=k):
                 with self.assertRaisesRegex(TypeError, "k must be integer"):
                     k_means([1, 2, 3], k)
+    
+    def test_k_is_one(self):
+        self.assertEqual(k_means([1, 2, 3], 1), [[1, 2, 3]])
                     
     def test_data_must_be_numeric_list(self):
         params = [
