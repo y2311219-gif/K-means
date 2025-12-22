@@ -5,6 +5,8 @@ def k_means(data, k):
         raise TypeError("k must be integer")
     if k <= 0:
         raise ValueError("k must be positive")
+    if k > len(data):
+        raise ValueError("k must not be larger than data size")
     
     if k == 1:
         return [sorted(data)]
